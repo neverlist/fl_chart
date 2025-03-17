@@ -342,7 +342,7 @@ class RadarChartPainter extends BaseChartPainter<RadarChartData> {
         ..strokeWidth = graph.borderWidth;
 
       _graphPointPaint
-        ..color = _graphBorderPaint.color
+        ..color = graph.pointColor
         ..style = PaintingStyle.fill;
 
       final path = Path();
@@ -354,6 +354,17 @@ class RadarChartPainter extends BaseChartPainter<RadarChartData> {
 
       path.moveTo(firstOffset.dx, firstOffset.dy);
 
+      dataSetOffset.entriesOffset.asMap().forEach((index, pointOffset) {
+        if (index == 0) return;
+
+        path.lineTo(pointOffset.dx, pointOffset.dy);
+      });
+
+      path.close();
+      canvasWrapper
+        ..drawPath(path, _graphPaint)
+        ..drawPath(path, _graphBorderPaint);
+
       canvasWrapper.drawCircle(
         firstOffset,
         graph.entryRadius,
@@ -362,19 +373,12 @@ class RadarChartPainter extends BaseChartPainter<RadarChartData> {
       dataSetOffset.entriesOffset.asMap().forEach((index, pointOffset) {
         if (index == 0) return;
 
-        path.lineTo(pointOffset.dx, pointOffset.dy);
-
         canvasWrapper.drawCircle(
           pointOffset,
           graph.entryRadius,
           _graphPointPaint,
         );
       });
-
-      path.close();
-      canvasWrapper
-        ..drawPath(path, _graphPaint)
-        ..drawPath(path, _graphBorderPaint);
     });
   }
 
